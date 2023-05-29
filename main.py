@@ -1,5 +1,6 @@
 from Integrations.reddit_api import RedditAPI
 from Integrations.occupy_democrats import OccupyDemocratsAPI
+from Integrations.gab import GabAPI
 from Integrations.database import Database
 
 def main():
@@ -11,15 +12,22 @@ def main():
     # reddit_api.output_basic_info()
     # reddit_api.top_posts_subreddit('Libertarian')
     
-    occupy_dem_api = OccupyDemocratsAPI("www.occupydemocrats.com", "OccupyDemocrats", "No-Auth", None, "database.db")
-    occupy_dem_api.output_basic_info()
-    left_leaning = occupy_dem_api.all_news_reports()
+    # occupy_dem_api = OccupyDemocratsAPI("www.occupydemocrats.com", "OccupyDemocrats", "No-Auth", None, "database.db")
+    # occupy_dem_api.output_basic_info()
+    # left_leaning = occupy_dem_api.all_news_reports()
     
+    gab_api = GabAPI("www.gab.com", "Gab", "No-Auth", None, "database.db")
+    gab_api.output_basic_info()
+    right_leaning = gab_api.all_posts(1874862)
+    
+    for i in right_leaning:
+        # source, statement, label, verified = 0
+        db.write_record("Gab - NationalPost", i, "Right", "No")
     
     # db.clear_data()
-    for i in left_leaning:
-        # source, statement, label, verified = 0
-        db.write_record("OccupyDemocrats", i, "Left", "No")
+    # for i in left_leaning:
+    #     # source, statement, label, verified = 0
+    #     db.write_record("OccupyDemocrats", i, "Left", "No")
     
     # for i in reddit_api.top_posts_subreddit('Libertarian'):
     #     # source, statement, label, verified = 0
