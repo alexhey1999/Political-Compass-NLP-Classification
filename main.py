@@ -20,9 +20,9 @@ def main():
     gab_api.output_basic_info()
     right_leaning = gab_api.all_posts(1874862)
     
-    for i in right_leaning:
+    # for i in right_leaning:
         # source, statement, label, verified = 0
-        db.write_record("Gab - NationalPost", i, "Right", "No")
+        # db.write_record("Gab - NationalPost", i, "Right", "No")
     
     # db.clear_data()
     # for i in left_leaning:
