@@ -1,6 +1,8 @@
 from Integrations.reddit_api import RedditAPI
 from Integrations.occupy_democrats import OccupyDemocratsAPI
 from Integrations.gab import GabAPI
+from Integrations.aljazeera import AlJazeeraAPI
+
 from Integrations.database import Database
 
 def main():
@@ -16,9 +18,14 @@ def main():
     # occupy_dem_api.output_basic_info()
     # left_leaning = occupy_dem_api.all_news_reports()
     
-    gab_api = GabAPI("www.gab.com", "Gab", "No-Auth", None, "database.db")
-    gab_api.output_basic_info()
-    right_leaning = gab_api.all_posts(1874862)
+    # gab_api = GabAPI("www.gab.com", "Gab", "No-Auth", None, "database.db")
+    # gab_api.output_basic_info()
+    # right_leaning = gab_api.all_posts(1874862)
+    
+    
+    aj_api = AlJazeeraAPI("www.aljazeera.com", "Al Jazeera", "No-Auth", None, "database.db")
+    aj_api.output_basic_info()
+    authoritarian_leaning = aj_api.all_posts_opinion()
     
     # for i in right_leaning:
         # source, statement, label, verified = 0
@@ -33,7 +40,7 @@ def main():
     #     # source, statement, label, verified = 0
     #     db.write_record("reddit", i, "Libertarian", "No")
     
-    db.commit_database_changes()
+    # db.commit_database_changes()
     db.close_database_connection()
     
 if __name__ == "__main__":
