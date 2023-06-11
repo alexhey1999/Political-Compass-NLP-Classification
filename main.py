@@ -25,22 +25,29 @@ def main():
     
     aj_api = AlJazeeraAPI("www.aljazeera.com", "Al Jazeera", "No-Auth", None, "database.db")
     aj_api.output_basic_info()
-    authoritarian_leaning = aj_api.all_posts_opinion()
+    authoritarian_leaning_opinion = aj_api.all_posts_opinion()
+    authoritarian_leaning_news = aj_api.all_posts_news(400)
     
     # for i in right_leaning:
-        # source, statement, label, verified = 0
         # db.write_record("Gab - NationalPost", i, "Right", "No")
     
+    # for i in right_leaning:
+        # db.write_record("Gab - NationalPost", i, "Right", "No")
+        
     # db.clear_data()
     # for i in left_leaning:
-    #     # source, statement, label, verified = 0
     #     db.write_record("OccupyDemocrats", i, "Left", "No")
     
     # for i in reddit_api.top_posts_subreddit('Libertarian'):
-    #     # source, statement, label, verified = 0
     #     db.write_record("reddit", i, "Libertarian", "No")
     
-    # db.commit_database_changes()
+    for i in authoritarian_leaning_opinion:
+        db.write_record("Al Jazeera - Opinion", i, "Authoritarian", "No")
+        
+    for i in authoritarian_leaning_news:
+        db.write_record("Al Jazeera - News", i, "Authoritarian", "No")
+        
+    db.commit_database_changes()
     db.close_database_connection()
     
 if __name__ == "__main__":
