@@ -81,6 +81,9 @@ def clear_db(debug):
             print("Exiting...")
     else:
         print("Cannot clear db in debug mode...")
+        
+def start_nlp(debug):
+    pass
 
 # Main Function handles ArgParser and options that can be executed
 def main():
@@ -95,13 +98,10 @@ def main():
         integrations_execute(args.debug)
         
     elif args.option == "clear":
-        
+        clear_db(args.debug)
     
+    elif args.option == "nlp":
+        start_nlp(args.debug)
 
 if __name__ == "__main__":
-    
-    
-        
-    
-    
-    # main()
+    main()
