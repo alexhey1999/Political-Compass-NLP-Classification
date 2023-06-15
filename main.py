@@ -6,6 +6,8 @@ from Integrations.cato_institute import CatoIntegration
 
 from Integrations.database import Database
 
+from NLPModel.nlpmodeller import NLPModel
+
 import argparse
 
 OPTIONS = ["collect", "clear", "nlp"]
@@ -83,17 +85,22 @@ def clear_db(debug):
         print("Cannot clear db in debug mode...")
         
 def start_nlp(debug):
-    pass
+    # Initialize the database
+    db = Database()
+    #  Initialize NLP Object
+    nlp = NLPModel(db)
+
 
 # Main Function handles ArgParser and options that can be executed
 def main():
     
     parser = argparse.ArgumentParser()
     parser.add_argument('option', choices = OPTIONS, type=str)
-    parser.add_argument('debug', choices = [True, False], type=bool)
+    parser.add_argument('--debug', type=bool, required=False)
     args = parser.parse_args()
     
     # OPTIONS = ["collect", "clear", "nlp"]
+    print(args.debug)
     if args.option == "collect":
         integrations_execute(args.debug)
         
