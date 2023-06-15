@@ -36,3 +36,9 @@ class Database:
     def clear_data(self):
         self.cur.execute(f'DROP TABLE IF EXISTS "{self.table}"')
         self.cur.execute(f'CREATE TABLE "{self.table}" ("ID" INTEGER,"Source" TEXT,"Statement" TEXT,"Label" TEXT, "Verified" TEXT, PRIMARY KEY("ID" AUTOINCREMENT))')
+        
+    def get_all_data(self):
+        res = self.cur.execute(f"SELECT * FROM {self.table}")
+        data = res.fetchall()
+        print(len(data))
+        return data

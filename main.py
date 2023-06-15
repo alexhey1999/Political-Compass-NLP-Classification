@@ -89,6 +89,8 @@ def start_nlp(debug):
     db = Database()
     #  Initialize NLP Object
     nlp = NLPModel(db)
+    nlp.start()
+    nlp.validate_compulsory_fields()
 
 
 # Main Function handles ArgParser and options that can be executed
