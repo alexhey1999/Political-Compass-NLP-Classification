@@ -89,8 +89,8 @@ def start_nlp(debug):
     db = Database()
     #  Initialize NLP Object
     nlp = NLPModel(db)
+    # Start NLP Process
     nlp.start()
-    nlp.validate_compulsory_fields()
 
 
 # Main Function handles ArgParser and options that can be executed
@@ -102,7 +102,6 @@ def main():
     args = parser.parse_args()
     
     # OPTIONS = ["collect", "clear", "nlp"]
-    print(args.debug)
     if args.option == "collect":
         integrations_execute(args.debug)
         

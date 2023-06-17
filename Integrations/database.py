@@ -40,5 +40,4 @@ class Database:
     def get_all_data(self):
         res = self.cur.execute(f"SELECT * FROM {self.table}")
         data = res.fetchall()
-        print(len(data))
         return data
