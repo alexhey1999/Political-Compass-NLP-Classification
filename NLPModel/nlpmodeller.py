@@ -11,24 +11,24 @@ from sklearn.metrics import precision_recall_fscore_support
 from sklearn.svm import LinearSVC
 from nltk.classify import SklearnClassifier
 from sklearn.metrics import classification_report, accuracy_score, precision_recall_fscore_support
+from alive_progress import alive_bar
+
 
 
 class NLPModel():
     def __init__(self,database):
         self.database = database
         self.percentage = 0.8
+        self.global_feature_dict = {}
+        self.random_seed = 10000
         
    
     def load_data(self):
-        self.data = self.database.get_all_data()
-        return self.data
-    
-   
-    def format_data(self):
-        # Initialize raw data
+        data = self.database.get_all_data()
         self.raw_data = []
-        for index, row in enumerate(self.data):
+        for row in data:
             self.raw_data.append((row[2],row[3]))
+        return self.raw_data     
    
    
     def split_and_preprocess_data(self):
@@ -39,15 +39,23 @@ class NLPModel():
         
         num_samples = len(self.raw_data)
         num_training_samples = int((self.percentage * num_samples))
-        for (text, label) in self.raw_data[:num_training_samples]:
-            self.train_data.append((self.to_feature_vector(self.pre_process(text)),label))
-        for (text, label) in self.raw_data[num_training_samples:]:
-            self.test_data.append((self.to_feature_vector(self.pre_process(text)),label))
-                     
+        print("Generating training data")
+        with alive_bar(len(self.raw_data[:num_training_samples])) as bar:
+            for (text, label) in self.raw_data[:num_training_samples]:
+                self.train_data.append((self.to_feature_vector(self.pre_process(text)),label))
+                bar()
+        
+        print("Generating test data")
+        with alive_bar(len(self.raw_data[num_training_samples:])) as bar:
+            for (text, label) in self.raw_data[num_training_samples:]:
+                self.test_data.append((self.to_feature_vector(self.pre_process(text)),label))
+                bar()     
+                
 
     def pre_process(self,text):
         text = text.lower()
         lemma = WordNetLemmatizer()
+        words_filter = [""]
         text = re.sub(r"(\w)([.,;:!?'\"”\)\[\]])", r"\1 \2", text)
         text = re.sub(r"([.,;:!?'\"“\(\)\[\]])(\w)", r"\1 \2", text)
         words = text.split(" ")
@@ -57,12 +65,17 @@ class NLPModel():
                 pass
                 lemma_word = lemma.lemmatize(word)
                 final_tokenized_string.append(lemma_word)
+        
+        # remove blank words from final_tokenized_string
+        final_tokenized_string = list(filter(lambda val: val not in words_filter, final_tokenized_string))
+        
+        # print(final_tokenized_string)
         return final_tokenized_string
     
         
     def to_feature_vector(self, tokens):
         # Should return a dictionary containing features as keys, and weights as values
-        self.global_feature_dict = {}
+        
         local_feature_dict = {}
         word_index = 0
         # Loop through every word in token
@@ -140,15 +153,16 @@ class NLPModel():
 
     def start(self):
         # load in data
+        # raw_data defined here
         self.load_data()
         
-        # raw_data defined here
-        self.format_data()
+        print(self.raw_data[0])
         
         # train_data and test_data defined here
         self.split_and_preprocess_data()
-        
-        print("Now %d rawData, %d trainData, %d testData" % (len(self.raw_data), len(self.train_data), len(self.test_data)), "Preparing training and test data...",sep='\n')
+
+        print(self.test_data[0])
+        print(self.train_data[0])
         
         x_axis_classifier = self.cross_validate(self.train_data, 10)
         
