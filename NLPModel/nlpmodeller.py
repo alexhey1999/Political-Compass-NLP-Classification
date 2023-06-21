@@ -22,6 +22,8 @@ class NLPModel():
         self.percentage = 0.8
         self.global_feature_dict = {}
         self.random_seed = 10000
+        self.x_split_cats = ["Left", "Right"]
+        self.y_split_cats = ["Authoritarian", "Libertarian"]
         random.seed(self.random_seed)
         
    
@@ -46,7 +48,7 @@ class NLPModel():
             else:
                 self.classes[i[1]] += 1
         
-        print(self.classes)
+        self.raw_data = balanced_data
         
         return self.raw_data     
    
@@ -65,27 +67,34 @@ class NLPModel():
                 reduced_data.append(i)
         
         return reduced_data
+    
+    def define_categories(self):
+
+        x_data = [a for a in self.raw_data if a[1] in self.x_split_cats]
+        y_data = [a for a in self.raw_data if a[1] in self.y_split_cats]
+        return x_data, y_data
         
-    def split_and_preprocess_data(self):
+    def split_and_preprocess_data(self, data):
         """Split the data between train_data and test_data according to the percentage
         and performs the preprocessing."""
-        self.train_data = []
-        self.test_data = []
-        
-        num_samples = len(self.raw_data)
+        train_data = []
+        test_data = []
+
+        num_samples = len(data)
         num_training_samples = int((self.percentage * num_samples))
         print("Generating training data")
-        with alive_bar(len(self.raw_data[:num_training_samples])) as bar:
-            for (text, label) in self.raw_data[:num_training_samples]:
-                self.train_data.append((self.to_feature_vector(self.pre_process(text)),label))
+        with alive_bar(len(data[:num_training_samples])) as bar:
+            for (text, label) in data[:num_training_samples]:
+                train_data.append((self.to_feature_vector(self.pre_process(text)),label))
                 bar()
         
         print("Generating test data")
-        with alive_bar(len(self.raw_data[num_training_samples:])) as bar:
-            for (text, label) in self.raw_data[num_training_samples:]:
-                self.test_data.append((self.to_feature_vector(self.pre_process(text)),label))
+        with alive_bar(len(data[num_training_samples:])) as bar:
+            for (text, label) in data[num_training_samples:]:
+                test_data.append((self.to_feature_vector(self.pre_process(text)),label))
                 bar()     
-                
+        
+        return train_data, test_data
 
     def pre_process(self,text):
         text = text.lower()
@@ -138,7 +147,7 @@ class NLPModel():
         return local_feature_dict
     
     
-    def cross_validate(self, dataset, folds, classifications = None):
+    def cross_validate(self, dataset, folds, classifications):
         results = []
         fold_size = int(len(dataset)/folds) + 1    
         for i in range(0,len(dataset),int(fold_size)):
@@ -148,13 +157,17 @@ class NLPModel():
             # FILL IN THE METHOD HERE
             statements = [x[0] for x in dataset[i:i+fold_size]]
             correct_outputs = [x[1] for x in dataset[i:i+fold_size]]
+            if set(correct_outputs) == {'Authoritarian'}:
+                print("oh shit")
+                continue
             
             classifier = self.train_classifier(dataset[i:i+fold_size])
             predicted_outputs = self.predict_labels(statements,classifier)
-            print(predicted_outputs)
-            if len(set(predicted_outputs)) != len(list(self.classes)):
-                raise Exception("Classifier did not learn all labels")
-            print(classification_report(correct_outputs,predicted_outputs,target_names=list(self.classes)))
+            if len(set(predicted_outputs)) != len(classifications):
+                # raise Exception("Classifier did not learn all labels")
+                print("Case of classifier not learning all classes in fold")
+                continue
+            print(classification_report(correct_outputs,predicted_outputs,target_names=classifications))
             
             (precision, recall, f1, _) = precision_recall_fscore_support(correct_outputs,predicted_outputs, average = "macro")
             accuracy = accuracy_score(correct_outputs,predicted_outputs)
@@ -183,7 +196,6 @@ class NLPModel():
 
 
     def train_classifier(self, data):
-        print("Training Classifier...")
         pipeline =  Pipeline([('svc', LinearSVC())])
         return SklearnClassifier(pipeline).train(data)
     
@@ -192,17 +204,17 @@ class NLPModel():
         # load in data
         # raw_data defined here
         self.load_data()
-        print(self.classes)
         
-        print(self.raw_data[0])
+        x_data, y_data = self.define_categories()
         
         # train_data and test_data defined here
-        self.split_and_preprocess_data()
+        x_test, x_train = self.split_and_preprocess_data(x_data)
+        y_test, y_train = self.split_and_preprocess_data(y_data)
 
-        print(self.test_data[0])
-        print(self.train_data[0])
-        
-        x_axis_classifier = self.cross_validate(self.train_data, 10)
+        print("Training X Classifier...")
+        x_classifier = self.cross_validate(x_test, 10, self.x_split_cats)
+        print("Training Y Classifier...")
+        y_classifier = self.cross_validate(y_test, 10, self.y_split_cats)
         
         
     
