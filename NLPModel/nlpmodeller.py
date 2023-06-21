@@ -12,6 +12,7 @@ from sklearn.svm import LinearSVC
 from nltk.classify import SklearnClassifier
 from sklearn.metrics import classification_report, accuracy_score, precision_recall_fscore_support
 from alive_progress import alive_bar
+import random
 
 
 
@@ -21,16 +22,50 @@ class NLPModel():
         self.percentage = 0.8
         self.global_feature_dict = {}
         self.random_seed = 10000
+        random.seed(self.random_seed)
         
    
     def load_data(self):
         data = self.database.get_all_data()
         self.raw_data = []
+        self.classes = {}
         for row in data:
+            if row[3] not in self.classes:
+                self.classes[row[3]] = 1
+            else:
+                self.classes[row[3]] += 1
+                
             self.raw_data.append((row[2],row[3]))
+        random.shuffle(self.raw_data)
+        balanced_data = self.balance_data(self.raw_data, self.classes)
+        
+        self.classes = {}
+        for i in balanced_data:
+            if i[1] not in self.classes:
+                self.classes[i[1]] = 1
+            else:
+                self.classes[i[1]] += 1
+        
+        print(self.classes)
+        
         return self.raw_data     
    
-   
+    def balance_data(self, data, item_dict):
+        running_record_counts = {}
+        # Balance the dataset by taking the category with the minimum data and then reducing the data to the correct size.
+        max_record_value = min(item_dict.values())
+        reduced_data = []
+        for i in data:
+            if i[1] not in running_record_counts:
+                running_record_counts[i[1]] = 1
+            else:
+                running_record_counts[i[1]] += 1
+                
+            if running_record_counts[i[1]] < max_record_value:
+                reduced_data.append(i)
+        
+        return reduced_data
+        
     def split_and_preprocess_data(self):
         """Split the data between train_data and test_data according to the percentage
         and performs the preprocessing."""
@@ -111,13 +146,15 @@ class NLPModel():
             print("Fold start on items %d - %d" % (i, i+fold_size))
             
             # FILL IN THE METHOD HERE
-            classifications = ["Left","Right", "Authoritarian", "Libertarian"]
             statements = [x[0] for x in dataset[i:i+fold_size]]
             correct_outputs = [x[1] for x in dataset[i:i+fold_size]]
             
             classifier = self.train_classifier(dataset[i:i+fold_size])
             predicted_outputs = self.predict_labels(statements,classifier)
-            print(classification_report(correct_outputs,predicted_outputs,target_names=classifications))
+            print(predicted_outputs)
+            if len(set(predicted_outputs)) != len(list(self.classes)):
+                raise Exception("Classifier did not learn all labels")
+            print(classification_report(correct_outputs,predicted_outputs,target_names=list(self.classes)))
             
             (precision, recall, f1, _) = precision_recall_fscore_support(correct_outputs,predicted_outputs, average = "macro")
             accuracy = accuracy_score(correct_outputs,predicted_outputs)
@@ -155,6 +192,7 @@ class NLPModel():
         # load in data
         # raw_data defined here
         self.load_data()
+        print(self.classes)
         
         print(self.raw_data[0])
         
