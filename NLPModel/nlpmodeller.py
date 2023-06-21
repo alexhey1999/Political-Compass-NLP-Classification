@@ -216,6 +216,9 @@ class NLPModel():
         print("Training Y Classifier...")
         y_classifier = self.cross_validate(y_test, 10, self.y_split_cats)
         
+        # TODO!!!
+        # Balance dataset further, folds should not only have one class as it causes severe issues
+        # Make so records alternate
         
     
 
