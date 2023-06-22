@@ -1,19 +1,18 @@
 import re
 from nltk.stem import WordNetLemmatizer
 import nltk
-from nltk.util import ngrams
-nltk.download('wordnet')
-nltk.download('stopwords')
-nltk.download('omw-1.4')
 from nltk.corpus import stopwords
-from sklearn.pipeline import Pipeline
 from sklearn.metrics import precision_recall_fscore_support
-from sklearn.svm import LinearSVC, SVC
+from sklearn.svm import  SVC
 from nltk.classify import SklearnClassifier
 from sklearn.metrics import classification_report, accuracy_score, precision_recall_fscore_support
 from alive_progress import alive_bar
 import random
+import pickle
 
+nltk.download('wordnet')
+nltk.download('stopwords')
+nltk.download('omw-1.4')
 
 
 class NLPModel():
@@ -218,6 +217,14 @@ class NLPModel():
         # return SklearnClassifier(pipeline).train(data)
         return SklearnClassifier(SVC(kernel='linear',probability=True)).train(data)
     
+    def save_model(self, x_classifier, y_classifier):
+        folder = 'NLPModel/Models/'
+        filename = 'x_classifier.sav'
+        pickle.dump(x_classifier, open(folder+filename, 'wb'))
+        
+        filename = 'y_classifier.sav'
+        pickle.dump(y_classifier, open(folder+filename, 'wb'))
+
 
     def start(self):
         # load in data
@@ -235,18 +242,29 @@ class NLPModel():
         print("Training Y Classifier...")
         y_results, y_classifier = self.cross_validate(y_test, 10, self.y_split_cats)
         
-        self.get_manual_prediction(x_classifier, y_classifier)
+        self.save_model(x_classifier, y_classifier)
+        # self.get_manual_prediction(x_classifier, y_classifier)
+        
+    def load_model(self):
+        folder = 'NLPModel/Models/'
+        filename = 'x_classifier.sav'
+        x_classifier = pickle.load(open(folder+filename, 'rb'))
+        filename = 'y_classifier.sav'
+        y_classifier = pickle.load(open(folder+filename, 'rb'))
+        return x_classifier, y_classifier
        
 
-    def get_manual_prediction(self, x_classifier, y_classifier):
+    def get_manual_prediction(self, x_classifier, y_classifier, statement = None):
         print("Manual Classifier...")
-        test_input = input("Input to Classify:\n")
+        if statement is None:
+            statement = input("Input to Classify:\n")
         print("X Classifier")
-        x_confidence = self.predict_label_list_from_raw(test_input, x_classifier)
+        x_confidence = self.predict_label_list_from_raw(statement, x_classifier)
         print(x_confidence)
         print("Y Classifier")
-        y_confidence = self.predict_label_list_from_raw(test_input, y_classifier)
+        y_confidence = self.predict_label_list_from_raw(statement, y_classifier)
         print(y_confidence)
+        return x_confidence, y_confidence
     
 
     # HELPER FUNCTIONS

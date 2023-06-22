@@ -5,12 +5,12 @@ from Integrations.aljazeera import AlJazeeraAPI
 from Integrations.cato_institute import CatoIntegration
 
 from Integrations.database import Database
-
+from Grapher.political_compass import prob_dicts_to_xy
 from NLPModel.nlpmodeller import NLPModel
 
 import argparse
 
-OPTIONS = ["collect", "clear", "nlp"]
+OPTIONS = ["collect", "clear", "nlp", "nlpload"]
 
 # Runs all classes from integration folder
 def integrations_execute(debug = True):
@@ -103,8 +103,11 @@ def load_nlp(debug):
         nlp = NLPModel(db, False)
     
     # Load NLP Model
-    nlp.load_model()
-
+    # test_statement = "Right now, the average American knows more about a submersible touring the Titanic than they do the crimes of the sitting US President and his son."
+    test_statement = "I just introduced an amendment to the National Defense Authorization Act to ELIMINATE the position of Chief Diversity Officer at the Department of Defense!"
+    x_classifier, y_classifier = nlp.load_model()
+    x_pred, y_pred = nlp.get_manual_prediction(x_classifier, y_classifier, test_statement)
+    prob_dicts_to_xy(x_pred, y_pred)
 
 # Main Function handles ArgParser and options that can be executed
 def main():
