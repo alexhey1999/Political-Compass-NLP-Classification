@@ -88,7 +88,10 @@ def start_nlp(debug):
     # Initialize the database
     db = Database()
     #  Initialize NLP Object
-    nlp = NLPModel(db)
+    if debug:
+        nlp = NLPModel(db, True)
+    else:
+        nlp = NLPModel(db, False)
     # Start NLP Process
     nlp.start()
 
