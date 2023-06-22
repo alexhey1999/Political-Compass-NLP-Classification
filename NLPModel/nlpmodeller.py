@@ -9,6 +9,7 @@ from sklearn.metrics import classification_report, accuracy_score, precision_rec
 from alive_progress import alive_bar
 import random
 import pickle
+from joblib import dump, load
 
 nltk.download('wordnet')
 nltk.download('stopwords')
@@ -219,11 +220,14 @@ class NLPModel():
     
     def save_model(self, x_classifier, y_classifier):
         folder = 'NLPModel/Models/'
-        filename = 'x_classifier.sav'
-        pickle.dump(x_classifier, open(folder+filename, 'wb'))
+        filename = 'x_classifier.joblib'
+        dump(x_classifier, folder+filename)
         
-        filename = 'y_classifier.sav'
-        pickle.dump(y_classifier, open(folder+filename, 'wb'))
+        filename = 'y_classifier.joblib'
+        dump(y_classifier, folder+filename)
+        
+        filename = 'global_feature_vector.joblib'
+        dump(self.global_feature_dict, folder+filename)
 
 
     def start(self):
@@ -243,14 +247,17 @@ class NLPModel():
         y_results, y_classifier = self.cross_validate(y_test, 10, self.y_split_cats)
         
         self.save_model(x_classifier, y_classifier)
-        # self.get_manual_prediction(x_classifier, y_classifier)
+        self.get_manual_prediction(x_classifier, y_classifier, "I just introduced an amendment to the National Defense Authorization Act to ELIMINATE the position of Chief Diversity Officer at the Department of Defense!")
         
     def load_model(self):
         folder = 'NLPModel/Models/'
-        filename = 'x_classifier.sav'
-        x_classifier = pickle.load(open(folder+filename, 'rb'))
-        filename = 'y_classifier.sav'
-        y_classifier = pickle.load(open(folder+filename, 'rb'))
+        filename = 'x_classifier.joblib'
+        x_classifier = load(folder+filename)
+        filename = 'y_classifier.joblib'
+        y_classifier = load(folder+filename)
+        filename = 'global_feature_vector.joblib'
+        self.global_feature_dict = load(folder+filename)
+        
         return x_classifier, y_classifier
        
 
