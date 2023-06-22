@@ -235,6 +235,10 @@ class NLPModel():
         print("Training Y Classifier...")
         y_results, y_classifier = self.cross_validate(y_test, 10, self.y_split_cats)
         
+        self.get_manual_prediction(x_classifier, y_classifier)
+       
+
+    def get_manual_prediction(self, x_classifier, y_classifier):
         print("Manual Classifier...")
         test_input = input("Input to Classify:\n")
         print("X Classifier")
@@ -243,8 +247,6 @@ class NLPModel():
         print("Y Classifier")
         y_confidence = self.predict_label_list_from_raw(test_input, y_classifier)
         print(y_confidence)
-
-        
     
 
     # HELPER FUNCTIONS
