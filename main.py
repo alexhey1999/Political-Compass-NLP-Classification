@@ -103,8 +103,8 @@ def load_nlp(debug):
         nlp = NLPModel(db, False)
     
     # Load NLP Model
-    # test_statement = "Right now, the average American knows more about a submersible touring the Titanic than they do the crimes of the sitting US President and his son."
-    test_statement = "I just introduced an amendment to the National Defense Authorization Act to ELIMINATE the position of Chief Diversity Officer at the Department of Defense!"
+    test_statement = "Right now, the average American knows more about a submersible touring the Titanic than they do the crimes of the sitting US President and his son."
+    test_statement = "Confiscate all guns!"
     x_classifier, y_classifier = nlp.load_model()
     x_pred, y_pred = nlp.get_manual_prediction(x_classifier, y_classifier, test_statement)
     plot_compass(x_pred, y_pred)

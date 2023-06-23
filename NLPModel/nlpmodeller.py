@@ -165,7 +165,8 @@ class NLPModel():
         fold_size = int(len(dataset)/folds) + 1    
         for i in range(0,len(dataset),int(fold_size)):
             # insert code here that trains and tests on the 10 folds of data in the dataset
-            print("Fold start on items %d - %d" % (i, i+fold_size))
+            if self.debug:
+                print("Fold start on items %d - %d" % (i, i+fold_size))
             
             # FILL IN THE METHOD HERE
             statements = [x[0] for x in dataset[i:i+fold_size]]
@@ -191,9 +192,24 @@ class NLPModel():
             for result in results:
                 sum_of_values += result[result_index]
             cv_results.append(sum_of_values/len(results))
-        
-        print(cv_results)
+        if self.debug:
+            print(cv_results)
         return cv_results, classifier
+    
+    def get_model_stats_against_test_set(self, classifier, test_set, classifications):
+        statements = [x[0] for x in test_set]
+        correct_outputs = [x[1] for x in test_set]
+        predicted_outputs = self.predict_labels(statements,classifier)
+        print(classification_report(correct_outputs,predicted_outputs,target_names=classifications))  
+        (precision, recall, f1, _) = precision_recall_fscore_support(correct_outputs,predicted_outputs, average = "macro")
+        accuracy = accuracy_score(correct_outputs,predicted_outputs)
+        print("============")
+        print("Model Against Test Split")
+        print("============")
+        print(f"Precision: {precision}")
+        print(f"Recall: {recall}")
+        print(f"F1: {f1}")
+        print(f"Accuracy: {accuracy}")
 
 
     def predict_labels(self, samples, classifier):
@@ -238,16 +254,21 @@ class NLPModel():
         x_data, y_data = self.define_categories()
         
         # train_data and test_data defined here
-        x_test, x_train = self.split_and_preprocess_data(x_data)
-        y_test, y_train = self.split_and_preprocess_data(y_data)
+        x_train, x_test = self.split_and_preprocess_data(x_data)
+        y_train, y_test = self.split_and_preprocess_data(y_data)
 
         print("Training X Classifier...")
-        x_results, x_classifier = self.cross_validate(x_test, 10, self.x_split_cats)
+        x_results, x_classifier = self.cross_validate(x_train, 10, self.x_split_cats)
         print("Training Y Classifier...")
-        y_results, y_classifier = self.cross_validate(y_test, 10, self.y_split_cats)
+        y_results, y_classifier = self.cross_validate(y_train, 10, self.y_split_cats)
         
-        self.save_model(x_classifier, y_classifier)
-        self.get_manual_prediction(x_classifier, y_classifier, "I just introduced an amendment to the National Defense Authorization Act to ELIMINATE the position of Chief Diversity Officer at the Department of Defense!")
+        # self.save_model(x_classifier, y_classifier)
+        
+        print("X Axis against test set...")
+        self.get_model_stats_against_test_set(x_classifier, x_test, self.x_split_cats)
+        print("Y Axis against test set...")
+        self.get_model_stats_against_test_set(y_classifier, y_test, self.y_split_cats)
+
         
     def load_model(self):
         folder = 'NLPModel/Models/'
