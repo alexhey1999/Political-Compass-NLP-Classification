@@ -6,7 +6,7 @@ from Integrations.cato_institute import CatoIntegration
 
 from Integrations.database import Database
 from Grapher.political_compass import prob_dicts_to_xy, plot_compass
-from NLPModel.nlpmodeller import NLPModel
+from NLPModel.LinearSVC import LinearSVC
 
 import argparse
 
@@ -89,22 +89,22 @@ def start_nlp(debug):
     db = Database()
     #  Initialize NLP Object
     if debug:
-        nlp = NLPModel(db, True)
+        nlp = LinearSVC(db, True)
     else:
-        nlp = NLPModel(db, False)
+        nlp = LinearSVC(db, False)
     # Start NLP Process
     nlp.start()
     
 def load_nlp(debug):
     db = Database()
     if debug:
-        nlp = NLPModel(db, True)
+        nlp = LinearSVC(db, True)
     else:
-        nlp = NLPModel(db, False)
+        nlp = LinearSVC(db, False)
     
     # Load NLP Model
     test_statement = "Right now, the average American knows more about a submersible touring the Titanic than they do the crimes of the sitting US President and his son."
-    test_statement = "Confiscate all guns!"
+    # test_statement = "Confiscate all guns!"
     x_classifier, y_classifier = nlp.load_model()
     x_pred, y_pred = nlp.get_manual_prediction(x_classifier, y_classifier, test_statement)
     plot_compass(x_pred, y_pred)

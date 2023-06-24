@@ -16,7 +16,7 @@ nltk.download('stopwords')
 nltk.download('omw-1.4')
 
 
-class NLPModel():
+class LinearSVC():
     def __init__(self,database, debug=False):
         self.database = database
         self.percentage = 0.8
@@ -235,7 +235,7 @@ class NLPModel():
         return SklearnClassifier(SVC(kernel='linear',probability=True)).train(data)
     
     def save_model(self, x_classifier, y_classifier):
-        folder = 'NLPModel/Models/'
+        folder = 'NLPModel/Linear SVC Models/'
         filename = 'x_classifier.joblib'
         dump(x_classifier, folder+filename)
         
@@ -272,7 +272,7 @@ class NLPModel():
 
         
     def load_model(self):
-        folder = 'NLPModel/Models/'
+        folder = 'NLPModel/Linear SVC Models/'
         filename = 'x_classifier.joblib'
         x_classifier = load(folder+filename)
         filename = 'y_classifier.joblib'
