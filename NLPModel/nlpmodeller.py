@@ -263,9 +263,10 @@ class NLPModel():
         y_results, y_classifier = self.cross_validate(y_train, 10, self.y_split_cats)
         
         # self.save_model(x_classifier, y_classifier)
-        
+        print("\n")
         print("X Axis against test set...")
         self.get_model_stats_against_test_set(x_classifier, x_test, self.x_split_cats)
+        print("\n")
         print("Y Axis against test set...")
         self.get_model_stats_against_test_set(y_classifier, y_test, self.y_split_cats)
 
