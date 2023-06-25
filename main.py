@@ -5,7 +5,7 @@ from Integrations.aljazeera import AlJazeeraAPI
 from Integrations.cato_institute import CatoIntegration
 
 from Integrations.database import Database
-from Grapher.political_compass import prob_dicts_to_xy, plot_compass, get_official_compass
+from Grapher.political_compass import get_official_compass
 from NLPModel.LinearSVC import LinearSVC
 
 import argparse
