@@ -5,7 +5,7 @@ from Integrations.aljazeera import AlJazeeraAPI
 from Integrations.cato_institute import CatoIntegration
 
 from Integrations.database import Database
-from Grapher.political_compass import prob_dicts_to_xy, plot_compass
+from Grapher.political_compass import prob_dicts_to_xy, plot_compass, get_official_compass
 from NLPModel.LinearSVC import LinearSVC
 
 import argparse
@@ -107,7 +107,7 @@ def load_nlp(debug):
     # test_statement = "Confiscate all guns!"
     x_classifier, y_classifier = nlp.load_model()
     x_pred, y_pred = nlp.get_manual_prediction(x_classifier, y_classifier, test_statement)
-    plot_compass(x_pred, y_pred)
+    get_official_compass(x_pred, y_pred)
 
 # Main Function handles ArgParser and options that can be executed
 def main():
