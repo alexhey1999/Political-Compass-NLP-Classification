@@ -1,7 +1,7 @@
 import random
 from alive_progress import alive_bar
 
-class NLP():
+class NLPBase():
     def __init__(self,database, debug=False):
         self.database = database
         self.percentage = 0.8
@@ -71,28 +71,6 @@ class NLP():
         y_data = [a for a in self.raw_data if a[1] in self.y_split_cats]
         return x_data, y_data
     
-        
-    def split_and_preprocess_data(self, data):
-        """Split the data between train_data and test_data according to the percentage
-        and performs the preprocessing."""
-        train_data = []
-        test_data = []
-
-        num_samples = len(data)
-        num_training_samples = int((self.percentage * num_samples))
-        print("Generating training data")
-        with alive_bar(len(data[:num_training_samples])) as bar:
-            for (text, label) in data[:num_training_samples]:
-                train_data.append((self.to_feature_vector(self.pre_process(text)),label))
-                bar()
-        
-        print("Generating test data")
-        with alive_bar(len(data[num_training_samples:])) as bar:
-            for (text, label) in data[num_training_samples:]:
-                test_data.append((self.to_feature_vector(self.pre_process(text)),label))
-                bar()     
-        
-        return train_data, test_data
 
     # HELPER FUNCTIONS
     def class_split(self):

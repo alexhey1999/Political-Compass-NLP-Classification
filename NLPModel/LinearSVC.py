@@ -1,4 +1,4 @@
-from .BaseNLP import NLP
+from .BaseNLP import NLPBase
 
 import re
 from nltk.stem import WordNetLemmatizer
@@ -18,7 +18,7 @@ nltk.download('stopwords')
 nltk.download('omw-1.4')
 
 
-class LinearSVC(NLP):
+class LinearSVC(NLPBase):
     def pre_process(self,text):
         text = text.lower()
         lemma = WordNetLemmatizer()
@@ -38,6 +38,29 @@ class LinearSVC(NLP):
         
         # print(final_tokenized_string)
         return final_tokenized_string
+    
+    
+    def split_and_preprocess_data(self, data):
+        """Split the data between train_data and test_data according to the percentage
+        and performs the preprocessing."""
+        train_data = []
+        test_data = []
+
+        num_samples = len(data)
+        num_training_samples = int((self.percentage * num_samples))
+        print("Generating training data")
+        with alive_bar(len(data[:num_training_samples])) as bar:
+            for (text, label) in data[:num_training_samples]:
+                train_data.append((self.to_feature_vector(self.pre_process(text)),label))
+                bar()
+        
+        print("Generating test data")
+        with alive_bar(len(data[num_training_samples:])) as bar:
+            for (text, label) in data[num_training_samples:]:
+                test_data.append((self.to_feature_vector(self.pre_process(text)),label))
+                bar()     
+        
+        return train_data, test_data
     
         
     def to_feature_vector(self, tokens):

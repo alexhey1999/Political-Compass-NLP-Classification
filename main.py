@@ -7,10 +7,11 @@ from Integrations.cato_institute import CatoIntegration
 from Integrations.database import Database
 from Grapher.political_compass import get_official_compass
 from NLPModel.LinearSVC import LinearSVC
+from NLPModel.BERT import BERTClassifier
 
 import argparse
 
-OPTIONS = ["collect", "clear", "nlp", "nlpload"]
+OPTIONS = ["collect", "clear", "nlp-l", "nlpload-l","nlp-b"]
 
 # Runs all classes from integration folder
 def integrations_execute(debug = True):
@@ -84,7 +85,7 @@ def clear_db(debug):
     else:
         print("Cannot clear db in debug mode...")
         
-def start_nlp(debug):
+def start_nlp_linear(debug):
     # Initialize the database
     db = Database()
     #  Initialize NLP Object
@@ -95,7 +96,7 @@ def start_nlp(debug):
     # Start NLP Process
     nlp.start()
     
-def load_nlp(debug):
+def load_nlp_linear(debug):
     db = Database()
     if debug:
         nlp = LinearSVC(db, True)
@@ -104,10 +105,25 @@ def load_nlp(debug):
     
     # Load NLP Model
     test_statement = "Right now, the average American knows more about a submersible touring the Titanic than they do the crimes of the sitting US President and his son."
+    test_statement = "Hunter Biden needs to be held accountable for his crimes."
+    test_statement = "Trump is against abortion rights and trans peoples right to exist"
+    test_statement = "That goes against the narrative of curreny day education. You may get cancelled for this"
     # test_statement = "Confiscate all guns!"
     x_classifier, y_classifier = nlp.load_model()
     x_pred, y_pred = nlp.get_manual_prediction(x_classifier, y_classifier, test_statement)
     get_official_compass(x_pred, y_pred)
+
+def start_nlp_bert(debug):
+    # Initialize the database
+    db = Database()
+    #  Initialize NLP Object
+    if debug:
+        nlp = BERTClassifier(db, True)
+    else:
+        nlp = BERTClassifier(db, False)
+    # Start NLP Process
+    nlp.start()
+
 
 # Main Function handles ArgParser and options that can be executed
 def main():
@@ -124,11 +140,14 @@ def main():
     elif args.option == "clear":
         clear_db(args.debug)
     
-    elif args.option == "nlp":
-        start_nlp(args.debug)
+    elif args.option == "nlp-l":
+        start_nlp_linear(args.debug)
         
-    elif args.option == "nlpload":
-        load_nlp(args.debug)
+    elif args.option == "nlpload-l":
+        load_nlp_linear(args.debug)
+
+    elif args.option == "nlp-b":
+        start_nlp_bert(args.debug)
 
 if __name__ == "__main__":
     main()
