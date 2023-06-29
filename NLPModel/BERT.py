@@ -58,6 +58,7 @@ class BERTClassifier(NLPBase):
         if self.debug:
             bert_raw_result = classifier_model(tf.constant(self.text_test))
             print(tf.sigmoid(bert_raw_result))
+            tf.keras.utils.plot_model(classifier_model)
         
         loss = tf.keras.losses.BinaryCrossentropy(from_logits=True)
         steps_per_epoch = len(list(x_train))
@@ -66,16 +67,21 @@ class BERTClassifier(NLPBase):
         optimizer = optimization.create_optimizer(init_lr=self.init_lr, num_train_steps=num_train_steps, num_warmup_steps=num_warmup_steps, optimizer_type='adamw')
         classifier_model.compile(optimizer=optimizer, loss=loss, metrics=self.metrics)
         self.train_model(classifier_model, x_train, y_train, x_test, y_test)
-        self.save_model(classifier_model, name)
+        # self.save_model(classifier_model, name)
         
     def save_model(self, classifier, name):
         saved_model_path = './NLPModel/BERT Models/{}_bert'.format(name.replace('/', '_'))
         classifier.save(saved_model_path, include_optimizer=True)
         
-    def load_model(self, name):
+    def load_model(self):
+        name = 'left-right'
         saved_model_path = './NLPModel/BERT Models/{}_bert'.format(name.replace('/', '_'))
-        reloaded_model = tf.saved_model.load(saved_model_path)
-        return reloaded_model
+        left_right_classifier = tf.keras.models.load_model(saved_model_path, compile=False)
+        name = 'libertarian-authoritarian'
+        saved_model_path = './NLPModel/BERT Models/{}_bert'.format(name.replace('/', '_'))
+        libertarian_authoritarian_classifier = tf.keras.models.load_model(saved_model_path, compile=False)
+        return BertAxisClassifier(left_right_classifier, libertarian_authoritarian_classifier)
+        
      
     def train_model(self, classifier, x_train, y_train, x_test, y_test):
         print(f'Training model with {self.tfhub_handle_encoder}')
@@ -98,30 +104,27 @@ class BERTClassifier(NLPBase):
         net = tf.keras.layers.Dense(1, activation=None, name='classifier')(net)
         return tf.keras.Model(text_input, net)
     
-    def choose_option(self, classifier):
-        print("1. Train Model")
-        print("2. Predict")
-        option = int(input("\n"))
-        if option == 1:
-            pass
-        elif option == 2:
-          pass  
-        else:
-            pass
+    def evaluate_saved_models(self):
+        self.load_data()
+        bert_classifiers = self.load_model()
+        x_data, y_data = self.define_categories()
+        # X Axis Checks against test data - LEFT/RIGHT
+        print("X Axis Checks against test data - LEFT/RIGHT")
+        self.evaluate_model(bert_classifiers.x_classifier, x_data, self.x_split_cats)
+        print("X Axis Checks against test data - AUTHORITARIAN/LIBERTARIAN")
+        self.evaluate_model(bert_classifiers.x_classifier, y_data, self.y_split_cats)
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+    def evaluate_model(self, classifier, data, cats):
+        # X Axis Checks against test data - LEFT/RIGHT
+        x_dataframe, _ = self.convert_to_dataframe(data, cats)
+        x_train, x_test, _, y_test = train_test_split(x_dataframe['Text'], x_dataframe["Category"], stratify=x_dataframe["Category"])
+        loss = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+        steps_per_epoch = len(list(x_train))
+        num_train_steps = steps_per_epoch * self.epochs
+        num_warmup_steps = int(0.1*num_train_steps)
+        optimizer = optimization.create_optimizer(init_lr=self.init_lr, num_train_steps=num_train_steps, num_warmup_steps=num_warmup_steps, optimizer_type='adamw')
+        classifier.compile(optimizer=optimizer, loss=loss, metrics=self.metrics)
+        classifier.evaluate(x_test, y_test)
 
         
     def get_bert_model(self, bert_model_name = "small_bert/bert_en_uncased_L-4_H-512_A-8"):
@@ -268,3 +271,25 @@ class BERTClassifier(NLPBase):
 
         print(f"BERT model selected           : {self.tfhub_handle_encoder}")
         print(f"Preprocess model auto-selected: {self.tfhub_handle_preprocess}")
+        
+
+      
+class BertAxisClassifier():
+    def __init__(self, x_classifier, y_classifier):
+        self.x_classifier = x_classifier
+        self.y_classifier = y_classifier
+    
+    def predict(self, text):
+        x_result_arr = tf.sigmoid(self.x_classifier(tf.constant([text]))).numpy().tolist()
+        x_result = x_result_arr[0][0]
+        y_result_arr = tf.sigmoid(self.y_classifier(tf.constant([text]))).numpy().tolist()
+        y_result = y_result_arr[0][0]
+        
+        print(x_result)
+        print(y_result)
+
+        x_pred = {'Left': (1-x_result), 'Right': x_result}
+        y_pred = {'Authoritarian': (1-y_result), 'Libertarian': (y_result)}
+        
+        return x_pred, y_pred
+
