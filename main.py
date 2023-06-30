@@ -3,6 +3,7 @@ from Integrations.occupy_democrats import OccupyDemocratsAPI
 from Integrations.gab import GabAPI
 from Integrations.AlJazeera import AlJazeeraAPI
 from Integrations.cato_institute import CatoIntegration
+from Integrations.openai import OpenAIConverter
 
 from Integrations.database import Database
 from Grapher.political_compass import get_official_compass
@@ -11,7 +12,7 @@ from NLPModel.BERT import BERTClassifier
 
 import argparse
 
-OPTIONS = ["collect", "clear", "nlp-l", "nlpload-l", "nlp-b", "nlpload-b"]
+OPTIONS = ["collect", "clear", "nlp-l", "nlpload-l", "nlp-b", "nlpload-b", "openai"]
 
 # Runs all classes from integration folder
 def integrations_execute(debug = True):
@@ -133,15 +134,6 @@ def load_nlp_bert(debug):
         nlp = BERTClassifier(db, False)
     
     # Load NLP Model
-    test_statement = "Right now, the average American knows more about a submersible touring the Titanic than they do the crimes of the sitting US President and his son."
-    test_statement = "Hunter Biden needs to be held accountable for his crimes."
-    test_statement = "Trump is against abortion rights and trans peoples right to exist"
-    # test_statement = "The more free the market is, the more free the people are"
-    # test_statement = "We should lock people up if they are going to abse drug laws in this country"
-    # test_statement = "That goes against the narrative of curreny day education. You may get cancelled for this"
-    # test_statement = "Why am I proud to be White? I know where my ancestors come from, I know my coat of arms, and I know my ancestors live through me"
-    # test_statement = "TRAVEL WARNING: Planned Parenthood urges pregnant women to avoid Tennessee"
-    # test_statement = "The current administration is not up to shape. We should have a re-election"
     test_statement = "Both political parties are bad"
     bert_classifier = nlp.load_model()
     x_pred, y_pred = bert_classifier.predict(test_statement)
@@ -152,6 +144,13 @@ def load_nlp_bert(debug):
     # x_pred, y_pred = nlp.get_manual_prediction(x_classifier, y_classifier, test_statement)
     # get_official_compass(x_pred, y_pred)
 
+
+def openai_converter():
+    db = Database()
+    openai = OpenAIConverter(db)
+    openai.run_process()
+    
+    
 # Main Function handles ArgParser and options that can be executed
 def main():
     
@@ -178,5 +177,8 @@ def main():
 
     elif args.option == "nlpload-b":
         load_nlp_bert(args.debug)
+    
+    elif args.option == "openai":
+        openai_converter()
 if __name__ == "__main__":
     main()
