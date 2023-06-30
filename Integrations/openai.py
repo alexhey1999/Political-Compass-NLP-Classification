@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from alive_progress import alive_bar
 import random
+import time
 
 class OpenAIConverter:
     def __init__(self, raw_database):
@@ -92,21 +93,55 @@ class OpenAIConverter:
             final_reduced_data.append(ri)
         return final_reduced_data
     
+    def get_openai_records(self):
+        res = self.cur.execute(f"SELECT * FROM {self.table}")
+        data = res.fetchall()
+        return data
     
     def run_process(self):
         load_dotenv()
         all_raw_records = self.load_data()
-        prompt = "The statement following the next occurance of the delimeter '---' is news headline that ends at the following '---' delimiter. The final word of this prompt will correspond to a political category. Using these 2 pieces of information you should convert the news headline into a tweet as if it was written by an average twitter user The user should tweet in agreement with the category. If you do not think there is enough context to write a tweet based on the statement and category, you should populate the tweet with information within reason so that it fits the category given. Never outright declare the category of the original text in the tweet.---"
+        all_raw_quotes = [a[3] for a in self.get_openai_records()]
+        # print(all_raw_records)
+        filtered_list = []
+        for i in all_raw_records:
+            if i[2] not in all_raw_quotes:
+                filtered_list.append(i)
+        all_raw_records = filtered_list
+        messages_to_load = [
+            "The statement following the next occurance of the delimeter '---' is news headline that ends at the following '---' delimiter. The final word of the prompt will correspond to a political category. Using these 2 pieces of information you should convert the news headline into a tweet as if it was written by an average twitter user.", 
+            "The tweet must be in support of the category ideology. Libertarians uphold the belief of Liberty and personal freedoms. Authoritarians use central power to preserve the political status quo (often done through enforcement or military action).",
+            "The following people are prominent political figueres followed by their standing. Use this context to base the tweets: Joe Biden - Left, Donald Trump - Right, Barack Obama - Left, George W. Bush - Right, Bill Clinton - Left, Hillary Clinton - Left, Mike Pence - Right, Ron Desantis - Right, Gavin Newsom - Left",
+            "You should avoid using tags in the tweet and must not express the category in plain text, only imply the users beliefs"
+            ] 
+        # prompt = "The statement following the next occurance of the delimeter '---' is news headline that ends at the following '---' delimiter. The final word of this prompt will correspond to a political category. Using these 2 pieces of information you should convert the news headline into a tweet as if it was written by an average twitter user. If you understand, simply reply 'OK'"
+        # #  If you do not think there is enough context to write a tweet based on the statement and category, you should populate the tweet with information within reason so that it fits the category given. Never outright declare the category of the original text in the tweet.---
         
         openai.api_key = os.getenv('OPENAI_KEY')
         all_messages = []
         for i, (_, _, original_statement, leaning, _) in enumerate(all_raw_records):
-            all_messages.append({"role": "system", "content": prompt+original_statement+"---"+leaning})
-        
+            record_context = []
+            for i in messages_to_load:
+                record_context.append({"role": "assistant", "content": i})
+            record_context.append({"role": "assistant", "content": "---"+original_statement+"---"+leaning})
+            all_messages.append(record_context)
+
+        # for i in all_messages:
+        #     print(i)
+        #     input()
+            
+        # exit()    
         with alive_bar(len(all_messages)) as bar:
             for open_ai_message_prompt, original_record in zip(all_messages, all_raw_records):
                 (_, source, original_statement, leaning, verified) = original_record
-                open_ai_response = openai.ChatCompletion.create(model="gpt-3.5-turbo",messages=[open_ai_message_prompt])
-                self.write_record(source, open_ai_response['choices'][0]["message"]["content"], original_statement, leaning, verified)
-                self.commit_database_changes()
-                bar()
+                try:
+                    open_ai_response = openai.ChatCompletion.create(model="gpt-3.5-turbo",messages=open_ai_message_prompt)
+                    self.write_record(source, open_ai_response['choices'][0]["message"]["content"], original_statement, leaning, verified)
+                    self.commit_database_changes()
+                    bar()
+                except:
+                    print("Error Connecting to OpenAI. Pausing Process...")
+                    time.sleep(30)
+                    bar()
+                    continue
+                
