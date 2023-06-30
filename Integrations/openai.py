@@ -94,7 +94,6 @@ class OpenAIConverter:
     
     
     def run_process(self):
-        self.clear_data()
         load_dotenv()
         all_raw_records = self.load_data()
         prompt = "The statement following the next occurance of the delimeter '---' is news headline that ends at the following '---' delimiter. The final word of this prompt will correspond to a political category. Using these 2 pieces of information you should convert the news headline into a tweet as if it was written by an average twitter user The user should tweet in agreement with the category. If you do not think there is enough context to write a tweet based on the statement and category, you should populate the tweet with information within reason so that it fits the category given. Never outright declare the category of the original text in the tweet.---"
