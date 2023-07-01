@@ -47,11 +47,36 @@ class OpenAIConverter:
         self.cur.execute(f"INSERT INTO {self.table} (Source, Statement, OriginalStatement, Label, Verified) VALUES (?,?,?,?,?)", (source, statement, original_statement, label, verified))
         pass
     
+    # Provided by Geeksforgeeks - https://www.geeksforgeeks.org/remove-the-first-and-last-occurrence-of-a-given-character-from-a-string/
+    def removeOcc(self, s, ch):
+        # Traverse the given string from
+        # the beginning
+        for i in range(len(s)):
+            # If ch is found
+            if (s[i] == ch):
+                s = s[0 : i] + s[i + 1:]
+                break
+        # Traverse the given string from
+        # the end
+        for i in range(len(s) - 1, -1, -1):
+            # If ch is found
+            if (s[i] == ch):
+                s = s[0 : i] + s[i + 1:]
+                break
+        return s
         
     def get_all_data(self):
         res = self.cur.execute(f"SELECT * FROM {self.table}")
         data = res.fetchall()
-        return data
+        # Required
+        # (1, 'reddit', 'Me thinks, you cannot claim to be a patriot if you’re charging the US Capitol waving confederate flag', 'Libertarian', 'No')
+        # Got
+        # (54, 'Cato Institute', '"Obama suddenly becoming a budget cutter? Now that\'s a plot twist! 🤔💸 Let\'s hope this newfound austerity leads to some real reforms. #LibertyWins"', 'Obama the Born‐again Budget Cutter?!?', 'Libertarian', 'No')
+        final = []
+        for _id, source, text, _, label ,verified in data:
+            filtered_text = self.removeOcc(text, '"')
+            final.append((_id, source, filtered_text, label, verified))
+        return final
     
     def load_data(self):
         data = self.original_database.get_all_data()

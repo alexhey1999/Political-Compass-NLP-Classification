@@ -12,7 +12,7 @@ from NLPModel.BERT import BERTClassifier
 
 import argparse
 
-OPTIONS = ["collect", "clear", "nlp-l", "nlpload-l", "nlp-b", "nlpload-b", "openai"]
+OPTIONS = ["collect", "clear", "nlp-l", "nlpload-l", "nlp-b", "nlpload-b", "openai", "testing"]
 
 # Runs all classes from integration folder
 def integrations_execute(debug = True):
@@ -89,6 +89,7 @@ def clear_db(debug):
 def start_nlp_linear(debug):
     # Initialize the database
     db = Database()
+    openai = OpenAIConverter(db)
     #  Initialize NLP Object
     if debug:
         nlp = LinearSVC(db, True)
@@ -180,5 +181,12 @@ def main():
     
     elif args.option == "openai":
         openai_converter()
+    
+    elif args.option == "testing":
+        db = Database()
+        openai = OpenAIConverter(db)
+        print(db.get_all_data()[0])
+        print(openai.get_all_data()[0])
+        
 if __name__ == "__main__":
     main()
