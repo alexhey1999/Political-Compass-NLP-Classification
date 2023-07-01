@@ -32,7 +32,7 @@ class BERTClassifier(NLPBase):
             tf.keras.metrics.FalsePositives(name='false-positives'),
             tf.keras.metrics.FalseNegatives(name='false-negatives')
         ]
-        self.epochs = 5
+        self.epochs = 10
         self.init_lr = 3e-5
         self.text_test = ['COULD SOMEBODY PLEASE EXPLAIN TO THE DERANGED, TRUMP HATING JACK SMITH, HIS FAMILY, AND HIS FRIENDS, THAT AS PRESIDENT OF THE UNITED STATES, I COME UNDER THE PRESIDENTIAL RECORDS ACT, AS AFFIRMED BY THE CLINTON SOCKS CASE, NOT BY THIS PSYCHOS’ FANTASY OF THE NEVER USED BEFORE ESPIONAGE ACT OF 1917. “SMITH” SHOULD BE LOOKING AT CROOKED JOE BIDDEN AND ALL OF THE CRIMES THAT HE HAS PERPETRATED ON THE AMERICAN PUBLIC, INCLUDING THE MILLIONS & MILLIONS OF DOLLARS HE EXTORTED FROM FOREIGN COUNTRIES!', 'WATCH: Brandon Herrera SLAMS the ATF for exceeding its authority over gun owners: “The ATF is not a legislative body. It is not Congress and it cannot make new laws. We shouldn’t have to worry about new gun laws that turn law-abiding citizens into felons, especially without an act of Congress.”','George Santos loses support of Kevin McCarthy', 'Planned Parenthood urges pregnant women to avoid Tennessee']
         
