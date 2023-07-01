@@ -11,6 +11,8 @@ import random
 import pandas as pd
 from alive_progress import alive_bar
 
+import pickle
+
 import matplotlib.pyplot as plt
 
 tf.get_logger().setLevel("ERROR")
@@ -67,12 +69,18 @@ class BERTClassifier(NLPBase):
         optimizer = optimization.create_optimizer(init_lr=self.init_lr, num_train_steps=num_train_steps, num_warmup_steps=num_warmup_steps, optimizer_type='adamw')
         classifier_model.compile(optimizer=optimizer, loss=loss, metrics=self.metrics)
         self.train_model(classifier_model, x_train, y_train, x_test, y_test)
-        # self.save_model(classifier_model, name)
+        self.save_metrics(name)
+        self.save_model(classifier_model, name)
         
     def save_model(self, classifier, name):
         saved_model_path = './NLPModel/BERT Models/{}_bert'.format(name.replace('/', '_'))
         classifier.save(saved_model_path, include_optimizer=True)
-        
+    
+    def save_metrics(self, name):
+        saved_metric_path = './NLPModel/BERT Models/{}_bert/metrics.file'.format(name.replace('/', '_'))
+        with open(saved_metric_path, 'wb') as f:
+            pickle.dump(self.history,f)
+            
     def load_model(self):
         name = 'left-right'
         saved_model_path = './NLPModel/BERT Models/{}_bert'.format(name.replace('/', '_'))
@@ -85,7 +93,7 @@ class BERTClassifier(NLPBase):
      
     def train_model(self, classifier, x_train, y_train, x_test, y_test):
         print(f'Training model with {self.tfhub_handle_encoder}')
-        history = classifier.fit(x_train, y_train, epochs=self.epochs)
+        self.history = classifier.fit(x_train, y_train, epochs=self.epochs)
         classifier.evaluate(x_test, y_test)
         
     def predict_results(self, classifier, to_classifiy):

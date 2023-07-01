@@ -92,18 +92,19 @@ def start_nlp_linear(debug):
     openai = OpenAIConverter(db)
     #  Initialize NLP Object
     if debug:
-        nlp = LinearSVC(db, True)
+        nlp = LinearSVC(openai, True)
     else:
-        nlp = LinearSVC(db, False)
+        nlp = LinearSVC(openai, False)
     # Start NLP Process
     nlp.start()
     
 def load_nlp_linear(debug):
     db = Database()
+    openai = OpenAIConverter(db)
     if debug:
-        nlp = LinearSVC(db, True)
+        nlp = LinearSVC(openai, True)
     else:
-        nlp = LinearSVC(db, False)
+        nlp = LinearSVC(openai, False)
     
     # Load NLP Model
     test_statement = "Right now, the average American knows more about a submersible touring the Titanic than they do the crimes of the sitting US President and his son."
@@ -119,20 +120,22 @@ def load_nlp_linear(debug):
 def start_nlp_bert(debug):
     # Initialize the database
     db = Database()
+    openai = OpenAIConverter(db)
     #  Initialize NLP Object
     if debug:
-        nlp = BERTClassifier(db, True)
+        nlp = BERTClassifier(openai, True)
     else:
-        nlp = BERTClassifier(db, False)
+        nlp = BERTClassifier(openai, False)
     # Start NLP Process
     nlp.start()
 
 def load_nlp_bert(debug):
     db = Database()
+    openai = OpenAIConverter(db)
     if debug:
-        nlp = BERTClassifier(db, True)
+        nlp = BERTClassifier(openai, True)
     else:
-        nlp = BERTClassifier(db, False)
+        nlp = BERTClassifier(openai, False)
     
     # Load NLP Model
     test_statement = "Both political parties are bad"
