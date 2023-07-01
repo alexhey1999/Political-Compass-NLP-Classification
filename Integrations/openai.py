@@ -110,7 +110,7 @@ class OpenAIConverter:
         all_raw_records = filtered_list
         messages_to_load = [
             "The statement following the next occurance of the delimeter '---' is news headline that ends at the following '---' delimiter. The final word of the prompt will correspond to a political category. Using these 2 pieces of information you should convert the news headline into a tweet as if it was written by an average twitter user.", 
-            "The tweet must be in support of the category ideology. Libertarians uphold the belief of Liberty and personal freedoms. Authoritarians use central power to preserve the political status quo (often done through enforcement or military action).",
+            "The tweet must be in support of the category ideology. Libertarians uphold the belief of Liberty and personal freedoms. Authoritarians should agree with central power to preserve the political status quo (often done through enforcement or military action) along with an anti-freedom mindset. Examples of these are dictatorships. This group is usually very nationalistic and is pro-interference",
             "The following people are prominent political figueres followed by their standing. Use this context to base the tweets: Joe Biden - Left, Donald Trump - Right, Barack Obama - Left, George W. Bush - Right, Bill Clinton - Left, Hillary Clinton - Left, Mike Pence - Right, Ron Desantis - Right, Gavin Newsom - Left",
             "You should avoid using tags in the tweet and must not express the category in plain text, only imply the users beliefs"
             ] 
