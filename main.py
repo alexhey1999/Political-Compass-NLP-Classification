@@ -11,8 +11,9 @@ from NLPModel.LinearSVC import LinearSVC
 from NLPModel.BERT import BERTClassifier
 
 import argparse
+import os
 
-OPTIONS = ["collect", "clear", "nlp-l", "nlpload-l", "nlp-b", "nlpload-b", "openai", "testing"]
+OPTIONS = ["collect", "clear", "nlp-l", "nlpload-l", "nlp-b", "nlpload-b", "openai", "testing", "demo"]
 
 # Runs all classes from integration folder
 def integrations_execute(debug = True):
@@ -49,10 +50,10 @@ def integrations_execute(debug = True):
     print("Writing records...")
     
     for i in right_leaning:
-        db.write_record("Gab - NationalPost", i, "Right", "No")
+        db.write_record("Gab - NationalFile", i, "Right", "No")
     
     for i in right_leaning:
-        db.write_record("Gab - NationalPost", i, "Right", "No")
+        db.write_record("Gab - NationalFile", i, "Right", "No")
         
     db.clear_data()
     for i in left_leaning:
@@ -129,6 +130,9 @@ def start_nlp_bert(debug):
     # Start NLP Process
     nlp.start()
 
+    
+
+
 def load_nlp_bert(debug):
     db = Database()
     openai = OpenAIConverter(db)
@@ -138,7 +142,17 @@ def load_nlp_bert(debug):
         nlp = BERTClassifier(openai, False)
     
     # Load NLP Model
-    test_statement = "Both political parties are bad"
+    
+    # Right Leaning Example
+    # =====================
+    # test_statement = "Right now, the average American knows more about a submersible touring the Titanic than they do the crimes of the sitting US President and his son."
+    
+    # Left Leaning Example
+    # =====================
+    test_statement = "CLOSING IN: Will Trump’s conspiracy trial date come as soon as January?"
+    
+    
+   
     bert_classifier = nlp.load_model()
     x_pred, y_pred = bert_classifier.predict(test_statement)
     print(x_pred)
@@ -148,6 +162,33 @@ def load_nlp_bert(debug):
     # x_pred, y_pred = nlp.get_manual_prediction(x_classifier, y_classifier, test_statement)
     # get_official_compass(x_pred, y_pred)
 
+def demo(debug):
+    db = Database()
+    openai = OpenAIConverter(db)
+    if debug:
+        nlp = BERTClassifier(openai, True)
+    else:
+        nlp = BERTClassifier(openai, False)
+    
+    # Load NLP Model
+    
+    # Right Leaning Example
+    # =====================
+    # test_statement = "Right now, the average American knows more about a submersible touring the Titanic than they do the crimes of the sitting US President and his son."
+    
+    # Left Leaning Example
+    # =====================
+    # test_statement = "Will Trump’s conspiracy trial date come as soon as January?"
+   
+    bert_classifier = nlp.load_model()
+    
+    while True:
+        os.system('cls')
+        statement = input("Please enter a statement to plot: \n")
+        x_pred, y_pred = bert_classifier.predict(statement)
+        # print(x_pred)
+        # print(y_pred)
+        get_official_compass(x_pred, y_pred)
 
 def openai_converter():
     db = Database()
@@ -185,11 +226,17 @@ def main():
     elif args.option == "openai":
         openai_converter()
     
+    elif args.option == "demo":
+        demo(args.debug) 
+    
     elif args.option == "testing":
         db = Database()
-        openai = OpenAIConverter(db)
-        print(db.get_all_data()[0])
-        print(openai.get_all_data()[0])
+        nlp = BERTClassifier(db, True)
+        nlp.evaluate_saved_models()
+        # db = Database()
+        # openai = OpenAIConverter(db)
+        # print(db.get_all_data()[0])
+        # print(openai.get_all_data()[0])
         
 if __name__ == "__main__":
     main()
