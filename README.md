@@ -22,6 +22,26 @@ pip install -r requirements.txt
 
 ### Genral Running Command
 
+All functions can be run from the central main file with the following command.
+
+```
+python main.py [option] [--debug]
+```
+
+#### Possible Options
+
+"collect", "clear", "nlp-l", "nlpload-l", "nlp-b", "nlpload-b", "openai", "testing", "demo"
+Option | Use | Notes
+--- | --- | ---
+```collect``` | |
+```clear``` | |
+```nlp-l``` | |
+```collect``` | |
+```collect``` | |
+```collect``` | |
+```collect``` | |
+
+
 
 ## Implementation
 
