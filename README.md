@@ -12,6 +12,17 @@ In addition, to utilize selenium, you will require chrome web driver in the path
 
 This can be obtained from https://chromedriver.chromium.org/downloads
 
+## Steps to run
+
+**NOTE: If you would like to test the models used in the report, you must first download the entire contents of https://drive.google.com/drive/folders/1MGyfUPWsNIlOvyyyw8yyfdb1OEFFcoKs?usp=sharing. Once this is done, you should place all 3 folders under the NLPModel Folder. LinearSVC savefile exists in the github repo however you should replace ALL files**
+
+```
+pip install -r requirements.txt
+```
+
+### Genral Running Command
+
+
 ## Implementation
 
 ### Integrations Layer
