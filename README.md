@@ -4,6 +4,20 @@
 
 This is my MSc Project at Queen Mary University of London. The purpose of this implementation is to utilise multiple APIs in order to collate a dataset that can be used to classify sentences or phrases on a political compass.
 
+## How it works
+
+The purpose of this code is to facilitate the collection of data from various political news sites and collate them into a single easy-to-use dataset. This is achieved using Selenium web emulation as well as the requests library.
+
+Once this data is extracted, it can be parsed into the NLP module of the system to train models using various algorithms.
+
+Finally, these models can be put into use by looking at unseen text and then converting to a score on the political compass.
+
+How this process functions in practice can be seen here:
+
+![Dissertation Process Diagram](https://github.com/alexhey1999/Political-Compass-NLP-Classification/assets/64182587/268fb00d-8d32-4223-b445-7d6c902bf727)
+
+In addition to this, there is built-in ChatGPT functionality for converting these headlines into social media post format. This can have a serious improvement on training results however there is a cost associated with utilizing the ChatGPT API.
+
 ## Pre-Requisites
 
 All modules used in this project are detailed in the requirements.txt file. This will need to be installed using PIP.
@@ -62,7 +76,7 @@ base.py provides a superclass of methods to write data to related databases as w
 
 In addition, there is also a database.py file containing the database class. This allows easy reading and addition of records to each of the integrations detailed above.
 
-This same database class is also utilised in openai.py which mirrors the database.py implementation and adds in new methods to translate data using the stated prompt.
+This same database class is also utilised in openai.py which mirrors the database.py implementation and adds new methods to translate data using the stated prompt.
 
 ### NLP Model
 
