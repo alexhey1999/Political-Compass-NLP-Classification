@@ -1,14 +1,14 @@
-# QMUL-MSc-Project
+# Political Compass NLP Classification
 
 ## Introduction
 
-This is my MSc Project at Queen Mary University of London. The purpose of this implementation is to utilise multiple APIs in order to collate a dataset that can be used to classify sentances or phrases on a political compass.
+This is my MSc Project at Queen Mary University of London. The purpose of this implementation is to utilise multiple APIs in order to collate a dataset that can be used to classify sentences or phrases on a political compass.
 
 ## Pre-Requisites
 
 All modules used in this project are detailed in the requirements.txt file. This will need to be installed using PIP.
 
-In addition, to utilize selenium, you will require Chrome web driver in the path of your system.
+In addition, to utilize selenium, you will require a Chrome web driver in the path of your system.
 
 This can be obtained from https://chromedriver.chromium.org/downloads
 
@@ -38,8 +38,8 @@ python main.py [option] [--debug]
 ```nlpload-l``` | Loads the LinearSVM Trained model and runs a few test prompts | 
 ```nlp-b``` | Starts the training for LinearSVM Method | Models will be overwritten so it is recommended to avoid this step when testing
 ```nlpload-b``` | Loads the LinearSVM Trained model and runs a few test prompts|
-```openai``` | Starts the OpenAI Conversion from original headline data to tweet format | Will overwrite the original database. Credentials used for this were imported in a .env file however this has been removed to save accidental spreading of API Keys
-```testing``` | Testing endpoint for miscellaneous tasks | Depricated 
+```openai``` | Starts the OpenAI Conversion from original headline data to tweet format | Will overwrite the original database. Credentials used for this were imported in a .env file however this has been removed to save the accidental spreading of API Keys
+```testing``` | Testing endpoint for miscellaneous tasks | Deprecated 
 ```demo``` | Runs BERT OpenAI model with allowance for a dynamic prompt | Used in presentation and will be the best one to run for dynamic testing
 
 ```--debug ``` can be used for showing logs for each step. This is not recommended as it can become cluttered.
@@ -83,4 +83,4 @@ databaseopenai.db details the headline data and its converted value using OpenAI
 
 ### Grapher
 
-This acts as the conversion between model values to graph values. This utilized the calculation detailed in the final report and accessed the www.politicalcompass.org website in order to get an accurate graph.
+This acts as the conversion between model values and graph values. This utilized the calculation detailed in the final report and accessed the www.politicalcompass.org website in order to get an accurate graph.
