@@ -1,4 +1,8 @@
 # Political Compass NLP Classification
+![Python](https://img.shields.io/badge/python-v3.9+-blue.svg)
+![Dependencies](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)
+[![GitHub Issues](https://img.shields.io/github/issues/alexhey1999/Political-Compass-NLP-Classification.svg)](https://github.com/alexhey1999/Political-Compass-NLP-Classification/issues)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Introduction
 
@@ -10,13 +14,15 @@ The purpose of this code is to facilitate the collection of data from various po
 
 Once this data is extracted, it can be parsed into the NLP module of the system to train models using various algorithms.
 
-Finally, these models can be put into use by looking at unseen text and then converting to a score on the political compass.
+Finally, these models can be put into use by looking at unseen text and then converting it to a score on the political compass.
 
 How this process functions in practice can be seen here:
 
 ![Dissertation Process Diagram](https://github.com/alexhey1999/Political-Compass-NLP-Classification/assets/64182587/268fb00d-8d32-4223-b445-7d6c902bf727)
 
 In addition to this, there is built-in ChatGPT functionality for converting these headlines into social media post format. This can have a serious improvement on training results however there is a cost associated with utilizing the ChatGPT API.
+
+My full Thesis report on this can be found on my website at https://alexhey.co.uk/resources/MSc-Paper-Alexander-Hey.pdf.
 
 ## Pre-Requisites
 
@@ -28,7 +34,7 @@ This can be obtained from https://chromedriver.chromium.org/downloads
 
 ## Steps to run
 
-**NOTE: If you would like to test the models used in the report, you must first download the entire contents of https://drive.google.com/drive/folders/1MGyfUPWsNIlOvyyyw8yyfdb1OEFFcoKs?usp=sharing. Once this is done, you should place all 3 folders under the NLPModel Folder. LinearSVC savefile exists in the GitHub repo however you should replace ALL files**
+**NOTE: If you would like to test the models used in the report, you must first download the entire contents of https://alexhey.co.uk/resources/MSc-Project-Models.zip. Once this is done, you should place all 3 folders under the NLPModel Folder. LinearSVC savefile exists in the GitHub repo however you should replace ALL files**
 
 ```
 pip install -r requirements.txt
